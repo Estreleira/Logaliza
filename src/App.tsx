@@ -13,7 +13,7 @@ import { InfosDe } from "./components/panels/InfosDe";
 import { Settings } from "./components/panels/Settings";
 import { useSettings } from "./hooks/useSettings";
 import { Stats } from "./components/panels/Stats";
-import { Twemoji } from "@teuteuf/react-emoji-render";
+import { Twemoji } from "react-emoji-render";
 import { getDayString, useTodays } from "./hooks/useTodays";
 import { InfosJa } from "./components/panels/InfosJa";
 

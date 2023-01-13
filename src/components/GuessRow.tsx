@@ -1,4 +1,4 @@
-import { Twemoji } from "@teuteuf/react-emoji-render";
+import { Twemoji } from "react-emoji-render";
 import React, { useCallback, useEffect, useState } from "react";
 import CountUp from "react-countup";
 import { useTranslation } from "react-i18next";

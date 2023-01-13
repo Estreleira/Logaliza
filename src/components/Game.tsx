@@ -1,4 +1,4 @@
-import { Twemoji } from "@teuteuf/react-emoji-render";
+import { Twemoji } from "react-emoji-render";
 import * as geolib from "geolib";
 import React, {
   ReactText,
