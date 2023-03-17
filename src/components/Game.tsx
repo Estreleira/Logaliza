@@ -1,4 +1,3 @@
-import { Twemoji } from "react-emoji-render";
 import * as geolib from "geolib";
 import React, {
   ReactText,
@@ -8,11 +7,12 @@ import React, {
   useRef,
   useState
 } from "react";
+import { Twemoji } from "react-emoji-render";
 import { useTranslation } from "react-i18next";
 import { toast } from "react-toastify";
-import { getCountryName, sanitizeCountryName } from "../domain/countries";
+import { getCountryFilename, getCountryName, sanitizeCountryName } from "../domain/countries";
 import { countriesI } from "../domain/countries.position";
-import { countries, srcImageFilename, srcImageFolder } from "../environment";
+import { countries, srcImageFolder } from "../environment";
 import { useMode } from "../hooks/useMode";
 import { useNewsNotifications } from "../hooks/useNewsNotifications";
 import { SettingsData } from "../hooks/useSettings";
@@ -40,7 +40,7 @@ export function Game({ settingsData, updateSettings }: GameProps) {
 
   const countryInputRef = useRef<HTMLInputElement>(null);
 
-  const [todays, addGuess, randomAngle, imageScale] = useTodays(dayString);
+  const [todays, addGuess, randomImageNumber, randomAngle, imageScale] = useTodays(dayString);
   const { country, guesses } = todays;
   const countryName = useMemo(
     () => (country ? getCountryName(i18n.resolvedLanguage, country) : ""),
@@ -48,7 +48,13 @@ export function Game({ settingsData, updateSettings }: GameProps) {
   );
   const normalizedCountryName = sanitizeCountryName(countryName);
 
-  const srcImage = `images/${srcImageFolder}/${country?.code.toLowerCase()}/${srcImageFilename}`;
+  let imageFilename = null;
+  const start = new Date("2023-01-13");
+  if (country != null && new Date() > start) {
+    imageFilename = getCountryFilename(i18n.resolvedLanguage, country) + randomImageNumber + ".jpg";
+  }
+
+  const srcImage = `images/${srcImageFolder}/${country?.code.toLowerCase()}/${imageFilename ?? "mapa.png"}`;
 
   const [currentGuess, setCurrentGuess] = useState("");
   const [hideImageMode, setHideImageMode] = useMode(
@@ -141,7 +147,7 @@ export function Game({ settingsData, updateSettings }: GameProps) {
           <Twemoji
             text={t("showCountry")}
             options={{ className: "inline-block" }}
-          />
+          >{}</Twemoji>
         </button>
       )}
       <div className="flex my-1">
@@ -193,7 +199,7 @@ export function Game({ settingsData, updateSettings }: GameProps) {
           <Twemoji
             text={t("cancelRotation")}
             options={{ className: "inline-block" }}
-          />
+          >{}</Twemoji>
         </button>
       )}
       <Guesses
@@ -223,7 +229,7 @@ export function Game({ settingsData, updateSettings }: GameProps) {
                 <Twemoji
                   text={t("Mapa das Comarcas")}
                   options={{ className: "inline-block" }}
-                />
+                >{}</Twemoji>
               </a>
               <a
                 className="underline text-center block mt-4 whitespace-nowrap"
@@ -234,7 +240,7 @@ export function Game({ settingsData, updateSettings }: GameProps) {
                 <Twemoji
                   text={t("Aprender Mais")}
                   options={{ className: "inline-block" }}
-                />
+                >{}</Twemoji>
               </a>
             </div>
             {ENABLE_TWITCH_LINK && (

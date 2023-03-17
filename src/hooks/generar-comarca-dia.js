@@ -1,11 +1,10 @@
 import { galicianComarcas } from "../domain/comarcas.position";
-import { CountryCode } from "../domain/countries.position";
 
-function padTo2Digits(num: number) {
+function padTo2Digits(num) {
   return num.toString().padStart(2, '0');
 }
 
-function formatDate(date: Date) {
+function formatDate(date) {
   return [
     date.getFullYear(),
     padTo2Digits(date.getMonth() + 1),
@@ -13,7 +12,7 @@ function formatDate(date: Date) {
   ].join('-');
 }
 
-function addDay(date: Date) {
+function addDay(date) {
   const result = new Date(date);
   result.setDate(result.getDate() + 1);
   return result;
@@ -21,11 +20,11 @@ function addDay(date: Date) {
 
 let today = new Date();
 const comarcas = galicianComarcas;
-const comarcasDia: Record<string, CountryCode> = {};
+const comarcasDia = {};
 
 while (comarcas.length > 0) {
   const random = Math.floor((Math.random() * 100)) % comarcas.length;
-  const formattedDay: string = "\"" + formatDate(today) + "\"";
+  const formattedDay = "\"" + formatDate(today) + "\"";
   comarcasDia[formattedDay] = comarcas[random].code;
   comarcas.splice(random, 1);
   today = addDay(today);

@@ -2,7 +2,7 @@ import { countriesI } from "./countries.position";
 
 export const galicianComarcas: countriesI[] = [
   {
-    name: "Ancares ",
+    name: "Ancares",
     code: "ANC",
     latitude: 42.85235471441868,
     longitude: -7.159490420721067

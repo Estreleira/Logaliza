@@ -642,6 +642,7 @@ i18n
   .use(initReactI18next)
   .use(LanguageDetector)
   .init({
+    compatibilityJSON: 'v3',
     resources: translations,
     interpolation: {
       escapeValue: false,
