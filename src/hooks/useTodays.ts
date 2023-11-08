@@ -1,10 +1,12 @@
 import { DateTime } from "luxon";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import seedrandom from "seedrandom";
+import { galicianComarcas, GalicianCountryCode } from "../domain/comarcas.position";
 import { Country } from "../domain/countries";
 import { CountryCode, countriesI } from "../domain/countries.position";
 import { Guess, loadAllGuesses, saveGuesses } from "../domain/guess";
-import { areas, bigEnoughCountriesWithImage, countriesWithImage, smallCountryLimit } from './../environment';
+import { areas, bigEnoughCountriesWithImage, countriesWithImage, environment, smallCountryLimit } from './../environment';
+
 
 const forcedCountriess: Record<string, number[]> = {
   "ANC": [2, 4, 5, 1, 3],
@@ -828,13 +830,20 @@ function getCountry(dayString: string) {
 
     const pickingDateString = pickingDate.toFormat("yyyy-MM-dd");
 
-    const forcedCountryCode = forcedCountries[dayString];
+    let forcedCountryCode: CountryCode | GalicianCountryCode;
+    
+    if (environment) {
+      forcedCountryCode = forcedCountries[dayString];
+    } else {
+      const random = Math.floor((Math.random() * 100)) % galicianComarcas.length;
+      forcedCountryCode = galicianComarcas[random].code;
+    }
 
     const forcedCountry =
       forcedCountryCode != null
         ? countriesWithImage.find(
           (country: countriesI) => country.code === forcedCountryCode
-        )
+          )
         : undefined;
 
     const countrySelection =
