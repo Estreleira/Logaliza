@@ -1,11 +1,11 @@
 import { DateTime } from "luxon";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import seedrandom from "seedrandom";
-import { galicianComarcas, GalicianCountryCode } from "../domain/comarcas.position";
+import { getNewForcedCountryCode, getNewRandomImageNumber } from "../App";
 import { Country } from "../domain/countries";
 import { CountryCode, countriesI } from "../domain/countries.position";
 import { Guess, loadAllGuesses, saveGuesses } from "../domain/guess";
-import { areas, bigEnoughCountriesWithImage, countriesWithImage, environment, smallCountryLimit } from './../environment';
+import { areas, bigEnoughCountriesWithImage, countriesWithImage, smallCountryLimit } from './../environment';
 
 
 const forcedCountriess: Record<string, number[]> = {
@@ -812,9 +812,29 @@ export function useTodays(dayString: string): [
     return 1 / (Math.cos(radianAngle) * Math.sqrt(2));
   }, [randomAngle]);
 
-  const randomImageNumber = randomNumber[dayString];
+  let randomImageNumber = randomNumber[dayString];
+  
+  const showNewGame = getShowNewGame();
+  if (showNewGame) {
+    randomImageNumber = getNewRandomImageNumber();
+  }
 
   return [todays, addGuess, randomImageNumber, randomAngle, imageScale];
+}
+
+function getShowNewGame(): boolean {
+  let showNewGame = false;
+  const dateStr = localStorage.getItem("newGameDate");
+  if (dateStr) {
+    const savedDate = new Date(dateStr);
+    const currentDate = new Date();
+    const date = currentDate.getDate();
+    const month = currentDate.getMonth();
+    const fullYear = currentDate.getFullYear();
+    const todayDate = new Date(date, month, fullYear);
+    showNewGame = todayDate < savedDate;
+  }
+  return showNewGame;
 }
 
 function getCountry(dayString: string) {
@@ -829,14 +849,11 @@ function getCountry(dayString: string) {
     smallCountryCooldown--;
 
     const pickingDateString = pickingDate.toFormat("yyyy-MM-dd");
+    let forcedCountryCode = forcedCountries[dayString];
 
-    let forcedCountryCode: CountryCode | GalicianCountryCode;
-    
-    if (environment) {
-      forcedCountryCode = forcedCountries[dayString];
-    } else {
-      const random = Math.floor((Math.random() * 100)) % galicianComarcas.length;
-      forcedCountryCode = galicianComarcas[random].code;
+    const showNewGame = getShowNewGame();
+    if (showNewGame) {
+      forcedCountryCode = getNewForcedCountryCode();
     }
 
     const forcedCountry =

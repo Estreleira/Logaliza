@@ -1,21 +1,22 @@
-import { ToastContainer, Flip } from "react-toastify";
+import React, { useEffect, useMemo, useState } from "react";
+import { Twemoji } from "react-emoji-render";
+import { useTranslation } from "react-i18next";
+import { Flip, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { Game } from "./components/Game";
-import React, { useEffect, useMemo, useState } from "react";
 import { Infos } from "./components/panels/Infos";
-import { useTranslation } from "react-i18next";
 import { InfosCo } from "./components/panels/InfosCo";
+import { InfosDe } from "./components/panels/InfosDe";
 import { InfosFr } from "./components/panels/InfosFr";
 import { InfosHu } from "./components/panels/InfosHu";
+import { InfosJa } from "./components/panels/InfosJa";
 import { InfosNl } from "./components/panels/InfosNl";
 import { InfosPl } from "./components/panels/InfosPl";
-import { InfosDe } from "./components/panels/InfosDe";
 import { Settings } from "./components/panels/Settings";
-import { useSettings } from "./hooks/useSettings";
 import { Stats } from "./components/panels/Stats";
-import { Twemoji } from "react-emoji-render";
+import { useSettings } from "./hooks/useSettings";
 import { getDayString, useTodays } from "./hooks/useTodays";
-import { InfosJa } from "./components/panels/InfosJa";
+import { galicianComarcas } from "./domain/comarcas.position";
 
 const supportLink: Record<string, string> = {
     UA: "https://donate.redcrossredcrescent.org/ua/donate/~my-donation?_cv=1",
@@ -102,11 +103,10 @@ export default function App() {
                             type="button"
                             onClick={() => newGame()}>
                             <Twemoji
-                                text=""
+                                text="Novo Jogo"
                                 options={{ className: "inline-block" }}
                                 className="flex items-center justify-center"
                             />
-                            Novo Jogo
                         </button>
                         <button className="ml-3 text-xl" type="button" onClick={() => setStatsOpen(true)}>
                             <Twemoji text="📈" />
@@ -146,7 +146,31 @@ export default function App() {
 
 function newGame(): React.MouseEventHandler<HTMLButtonElement> | undefined {
     localStorage.clear();
+    setNewForcedCountryCode();
+    setNewRandomImageNumber();
+    localStorage.setItem("newGameDate", new Date().toString());
     // eslint-disable-next-line no-restricted-globals
     location.reload();
     return;
+}
+
+function setNewForcedCountryCode(): void {
+    const random = Math.floor((Math.random() * 100)) % galicianComarcas.length;
+    localStorage.setItem("forcedCountryCode", galicianComarcas[random].code);
+}
+
+function setNewRandomImageNumber(): void {
+    let randomImageNumber = Math.floor((Math.random() * 100)) % 7 + 1;
+    if (randomImageNumber === 5) {
+      randomImageNumber = 7;
+    }
+    localStorage.setItem("randomImageNumber", randomImageNumber.toString());
+}
+
+export function getNewForcedCountryCode(): string {
+    return localStorage.getItem("forcedCountryCode") as string;
+}
+export function getNewRandomImageNumber(): number {
+    const num = localStorage.getItem("randomImageNumber");
+    return num != null ? +num : 1;
 }
