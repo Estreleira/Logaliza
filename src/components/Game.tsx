@@ -55,6 +55,7 @@ export function Game({ settingsData, updateSettings }: GameProps) {
   }
 
   const srcImage = `images/${srcImageFolder}/${country?.code.toLowerCase()}/${imageFilename ?? "mapa.png"}`;
+  const mapImage = `images/${srcImageFolder}/${country?.code.toLowerCase()}/${"mapa.png"}`;
 
   const [currentGuess, setCurrentGuess] = useState("");
   const [hideImageMode, setHideImageMode] = useMode(
@@ -169,6 +170,10 @@ export function Game({ settingsData, updateSettings }: GameProps) {
           }`}
           alt="country to guess"
           src={ srcImage }
+          onError={({ currentTarget }) => {
+            currentTarget.onerror = null; // prevents looping
+            currentTarget.src=mapImage;
+          }}
           style={
             rotationMode && !gameEnded
               ? {
