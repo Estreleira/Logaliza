@@ -17,6 +17,8 @@ import { Stats } from "./components/panels/Stats";
 import { useSettings } from "./hooks/useSettings";
 import { getDayString, useTodays } from "./hooks/useTodays";
 import { galicianComarcas } from "./domain/comarcas.position";
+import { forcedCountries, randomNumber } from "./hooks/forcedLead";
+import seedrandom from 'seedrandom';
 
 const supportLink: Record<string, string> = {
     UA: "https://donate.redcrossredcrescent.org/ua/donate/~my-donation?_cv=1",
@@ -24,8 +26,9 @@ const supportLink: Record<string, string> = {
 
 export default function App() {
     const { t, i18n } = useTranslation();
-
+    
     const dayString = useMemo(getDayString, []);
+    init(dayString);
     const [{ country }] = useTodays(dayString);
 
     const [infoOpen, setInfoOpen] = useState(false);
@@ -154,17 +157,17 @@ function newGame(): React.MouseEventHandler<HTMLButtonElement> | undefined {
     return;
 }
 
-function setNewForcedCountryCode(): void {
-    const random = Math.floor((Math.random() * 100)) % galicianComarcas.length;
+function setNewForcedCountryCode(fixedRandom?: number): void {
+    const random = Math.floor(((fixedRandom ?? Math.random()) * 100)) % galicianComarcas.length;
     localStorage.setItem("forcedCountryCode", galicianComarcas[random].code);
 }
 
-function setNewRandomImageNumber(): void {
-    let randomImageNumber = Math.floor((Math.random() * 100)) % 7 + 1;
-    if (randomImageNumber === 5) {
-      randomImageNumber = 7;
+function setNewRandomImageNumber(fixedRandom?: number): void {
+    let random = Math.floor(((fixedRandom ?? Math.random()) * 100)) % 7 + 1;
+    if (random === 5) {
+      random = 7;
     }
-    localStorage.setItem("randomImageNumber", randomImageNumber.toString());
+    localStorage.setItem("randomImageNumber", random.toString());
 }
 
 export function getNewForcedCountryCode(): string {
@@ -173,4 +176,44 @@ export function getNewForcedCountryCode(): string {
 export function getNewRandomImageNumber(): number {
     const num = localStorage.getItem("randomImageNumber");
     return num != null ? +num : 1;
+}
+
+export function getShowNewGame(): boolean {
+  let showNewGame = false;
+  const dateStr = localStorage.getItem("newGameDate");
+  if (dateStr) {
+    const savedDate = new Date(dateStr);
+    const currentDate = new Date();
+    const date = currentDate.getDate();
+    const month = currentDate.getMonth();
+    const fullYear = currentDate.getFullYear();
+    const todayDate = new Date(fullYear, month, date);
+    showNewGame = todayDate < savedDate;
+  }
+  return showNewGame;
+}
+
+function init(dayString: string): void {
+    const randomImageNumber = randomNumber[dayString];
+    if (!getShowNewGame() && !randomImageNumber) {
+        const seed = getNewRandomSeed();
+        setNewRandomImageNumber(seed);
+    }
+
+    const forcedCountryCode = forcedCountries[dayString];
+    if (!getShowNewGame() && !forcedCountryCode) {
+        const seed = getNewRandomSeed();
+        setNewForcedCountryCode(seed);
+    }
+}
+
+function getNewRandomSeed(): number {
+    const date = new Date();
+    const year = date.getFullYear();
+    const month = date.getMonth();
+    const dayDate = date.getDate();
+    const day = date.getDay();
+
+    const generator = seedrandom(`${year}-${month}-${dayDate}-${day}`);
+    return generator();
 }
