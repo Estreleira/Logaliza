@@ -101,16 +101,6 @@ export default function App() {
                         <h1 className="text-4xl font-bold uppercase tracking-wide text-center my-1 flex-auto">
                             LO<span className="text-lightblue-600">GALI</span>ZA
                         </h1>
-                        <button
-                            className="rounded font-bold p-1 flex items-center justify-center border-2 uppercase my-0.5 hover:bg-gray-50 active:bg-gray-100 dark:hover:bg-slate-800 dark:active:bg-slate-700"
-                            type="button"
-                            onClick={() => newGame()}>
-                            <Twemoji
-                                text="Novo Jogo"
-                                options={{ className: "inline-block" }}
-                                className="flex items-center justify-center"
-                            />
-                        </button>
                         <button className="ml-3 text-xl" type="button" onClick={() => setStatsOpen(true)}>
                             <Twemoji text="📈" />
                         </button>

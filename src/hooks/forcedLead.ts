@@ -7,5 +7,5 @@ export const forcedCountries: Record<string, CountryCode> = {
 
 export const randomNumber: Record<string, number> = {
   "2023-11-20": 3,
-  "2023-11-21": 8,
+  "2023-11-21": 5,
 }
