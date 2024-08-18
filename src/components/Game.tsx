@@ -1,16 +1,21 @@
-import * as geolib from "geolib";
 import React, {
   ReactText,
   useCallback,
   useEffect,
   useMemo,
   useRef,
-  useState
+  useState,
 } from "react";
+import * as geolib from "geolib";
+import confetti from "canvas-confetti"; // Importa canvas-confetti
 import { Twemoji } from "react-emoji-render";
 import { useTranslation } from "react-i18next";
 import { toast } from "react-toastify";
-import { getCountryFilename, getCountryName, sanitizeCountryName } from "../domain/countries";
+import {
+  getCountryFilename,
+  getCountryName,
+  sanitizeCountryName,
+} from "../domain/countries";
 import { countriesI } from "../domain/countries.position";
 import { countries, srcImageFolder } from "../environment";
 import { useMode } from "../hooks/useMode";
@@ -40,7 +45,8 @@ export function Game({ settingsData, updateSettings }: GameProps) {
 
   const countryInputRef = useRef<HTMLInputElement>(null);
 
-  const [todays, addGuess, randomImageNumber, randomAngle, imageScale] = useTodays(dayString);
+  const [todays, addGuess, randomImageNumber, randomAngle, imageScale] =
+    useTodays(dayString);
   const { country, guesses } = todays;
   const countryName = useMemo(
     () => (country ? getCountryName(i18n.resolvedLanguage, country) : ""),
@@ -51,10 +57,14 @@ export function Game({ settingsData, updateSettings }: GameProps) {
   let imageFilename = null;
   const start = new Date("2023-01-13");
   if (country != null && new Date() > start) {
-    imageFilename = getCountryFilename(i18n.resolvedLanguage, country) + randomImageNumber + ".jpg";
+    imageFilename =
+      getCountryFilename(i18n.resolvedLanguage, country) +
+      randomImageNumber +
+      ".jpg";
   }
 
-  const srcImage = `images/${srcImageFolder}/${country?.code.toLowerCase()}/${imageFilename ?? "mapa.png"}`;
+  const srcImage = `images/${srcImageFolder}/${country?.code.toLowerCase()}/${imageFilename ?? "mapa.png"
+    }`;
   const mapImage = `images/${srcImageFolder}/${country?.code.toLowerCase()}/${"mapa.png"}`;
 
   const [currentGuess, setCurrentGuess] = useState("");
@@ -72,6 +82,17 @@ export function Game({ settingsData, updateSettings }: GameProps) {
   const gameEnded =
     guesses.length === MAX_TRY_COUNT ||
     guesses[guesses.length - 1]?.distance === 0;
+
+  // useEffect para serpentinas cuando el usuario acierte la comarca
+  useEffect(() => {
+    if (gameEnded && guesses[guesses.length - 1]?.distance === 0) {
+      confetti({
+        particleCount: 100,
+        spread: 70,
+        origin: { y: 0.6 },
+      });
+    }
+  }, [gameEnded, guesses]);
 
   const handleSubmit = useCallback(
     (e: React.FormEvent<HTMLFormElement>) => {
@@ -165,20 +186,19 @@ export function Game({ settingsData, updateSettings }: GameProps) {
           </button>
         )}
         <img
-          className={`pointer-events-none max-h-52 m-auto transition-transform duration-700 ease-in dark:invert ${
-            hideImageMode && !gameEnded ? "h-0" : "h-full"
-          }`}
+          className={`pointer-events-none w-full h-auto m-auto transition-transform duration-700 ease-in dark:invert ${hideImageMode && !gameEnded ? "hidden" : ""
+            }`}
           alt="country to guess"
-          src={ srcImage }
+          src={srcImage}
           onError={({ currentTarget }) => {
             currentTarget.onerror = null; // prevents looping
-            currentTarget.src=mapImage;
+            currentTarget.src = mapImage;
           }}
           style={
             rotationMode && !gameEnded
               ? {
-                  transform: `rotate(${randomAngle}deg) scale(${imageScale})`,
-                }
+                transform: `rotate(${randomAngle}deg) scale(${imageScale})`,
+              }
               : {}
           }
         />
@@ -236,48 +256,13 @@ export function Game({ settingsData, updateSettings }: GameProps) {
                   options={{ className: "inline-block" }}
                 >{}</Twemoji>
               </a>
-              <a
-                className="underline text-center block mt-4 whitespace-nowrap"
-                href={`https://estreleira.gal/${normalizedCountryName}`}
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                <Twemoji
-                  text={t("Aprender Mais")}
-                  options={{ className: "inline-block" }}
-                >{}</Twemoji>
-              </a>
-            </div>
-            {ENABLE_TWITCH_LINK && (
-              <div className="flex flex-wrap gap-4 justify-center">
-                <a
-                  className="underline text-center block mt-4 whitespace-nowrap"
-                  href="https://www.twitch.tv/t3uteuf"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  <Twemoji
-                    text="More? Play on Twitch! 👾"
-                    options={{ className: "inline-block" }}
-                  />
-                </a>
-              </div>
-            )}
-            <div className="flex flex-wrap gap-4 justify-center">
-              <a
-                className="underline text-center block mt-4 whitespace-nowrap"
-                href="https://emovi.teuteuf.fr/"
-                target="_blank"
-                rel="noopener noreferrer"
-              >                
-              </a>
             </div>
           </>
         ) : (
           <form onSubmit={handleSubmit}>
             <div className="flex flex-col">
               <CountryInput
-                inputRef={countryInputRef}
+                inputRef={countryInputRef} // Cambiado de `countryInputRef` a `inputRef`
                 currentGuess={currentGuess}
                 setCurrentGuess={setCurrentGuess}
               />
@@ -285,11 +270,7 @@ export function Game({ settingsData, updateSettings }: GameProps) {
                 className="rounded font-bold p-1 flex items-center justify-center border-2 uppercase my-0.5 hover:bg-gray-50 active:bg-gray-100 dark:hover:bg-slate-800 dark:active:bg-slate-700"
                 type="submit"
               >
-                <Twemoji
-                  text="🌍"
-                  options={{ className: "inline-block" }}
-                  className="flex items-center justify-center"
-                />{" "}
+                <Twemoji text="🌍" options={{ className: "inline-block" }} /> 
                 <span className="ml-1">{t("guess")}</span>
               </button>
             </div>
