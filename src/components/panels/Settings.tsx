@@ -28,7 +28,26 @@ export function Settings({
       debugAction={() => setDebugEnabled(true)}
     >
       <div className="my-4 flex flex-col gap-2">
-          <div className="flex p-1">
+        <div className="flex p-1">
+          <select
+            id="setting-distanceUnit"
+            className="h-8 dark:bg-slate-800 w-16 p-1"
+            value={settingsData.distanceUnit}
+            onChange={(e) =>
+              updateSettings({ distanceUnit: e.target.value as "km" | "miles" })
+            }
+          >
+            <option value="km">KM</option>
+            <option value="miles">Miles</option>
+          </select>
+          <label
+            className="flex-1 ml-2 flex items-center"
+            htmlFor="setting-distanceUnit"
+          >
+            {t("settings.distanceUnit")}
+          </label>
+        </div>
+        <div className="flex p-1">
           <select
             id="setting-theme"
             className="h-8 dark:bg-slate-800 w-16 p-1"
@@ -37,8 +56,8 @@ export function Settings({
               updateSettings({ theme: e.target.value as "light" | "dark" })
             }
           >
-            <option value="light">Branco</option>
-            <option value="dark">Preto</option>
+            <option value="light">Light</option>
+            <option value="dark">Dark</option>
           </select>
           <label
             className="flex-1 ml-2 flex items-center"

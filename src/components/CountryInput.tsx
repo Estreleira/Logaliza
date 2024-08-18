@@ -1,3 +1,4 @@
+import { t } from "i18next";
 import React, { useState } from "react";
 import Autosuggest from "react-autosuggest";
 import { useTranslation } from "react-i18next";
@@ -16,7 +17,8 @@ export function CountryInput({
   setCurrentGuess,
 }: CountryInputProps) {
   const [suggestions, setSuggestions] = useState<string[]>([]);
-  const { t, i18n } = useTranslation(); // Asegúrate de usar `useTranslation`
+
+  const { i18n } = useTranslation();
 
   return (
     <Autosuggest
@@ -26,7 +28,7 @@ export function CountryInput({
       suggestions={suggestions}
       onSuggestionsFetchRequested={({ value }) =>
         setSuggestions(
-          countries
+            countries
             .map((c) => getCountryName(i18n.resolvedLanguage, c).toUpperCase())
             .filter((countryName) =>
               sanitizeCountryName(countryName).includes(
@@ -47,9 +49,9 @@ export function CountryInput({
         className: "border-2 rounded flex-auto relative",
       }}
       inputProps={{
-        ref: inputRef, // Se utiliza `inputRef` aquí
+        ref: inputRef,
         className: "w-full dark:bg-slate-800 dark:text-slate-100 p-1",
-        placeholder: t("placeholder"), // Utiliza `t` aquí
+        placeholder: t("placeholder"),
         value: currentGuess,
         onChange: (_e, { newValue }) => setCurrentGuess(newValue),
       }}
